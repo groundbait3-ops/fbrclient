@@ -1,0 +1,76 @@
+name: Build and Release FBR CLIENT
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fbrclient-1.21.10
+          path: build/libs/fbrclient-*.jar
+          if-no-files-found: error
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v1.21.10
+          name: FBR CLIENT v1.21.10
+          body: |
+            ## FBR CLIENT v1.21.10
+            
+            ### Features
+            - **21 Modules** across 3 categories
+            - **Krypton-style GUI** (Press M to open)
+            - **GrimAC v4 bypass** on CPVP modules
+            - **100x FPS Boost** performance mode
+            - **Rainbow Player ESP** (1000 block range)
+            
+            ### CPVP (8 modules)
+            - Auto Anchor (GrimAC bypass)
+            - Crystal Macro (20 CPS)
+            - Auto Totem (2s pause bypass)
+            - Kill Aura, Velocity, Auto Clicker, Reach, Criticals
+            
+            ### DONUT (11 modules)
+            - Player ESP (rainbow, 1000 blocks)
+            - Shulker Order, Chunk/Farm/Stash/Elytra Finders
+            - Flight, Speed, No Fall, Jesus, Spider
+            
+            ### PERFORMANCE (2 modules)
+            - FPS Boost (100x mode)
+            - Ultimate Culling
+            
+            ### Requirements
+            - Minecraft 1.20.1+
+            - Fabric Loader 0.15.3+
+            - Fabric API
+            
+            ### Installation
+            Download `fbrclient-1.21.10.jar` and place in `.minecraft/mods/`
+          files: build/libs/fbrclient-*.jar
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
